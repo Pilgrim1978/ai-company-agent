@@ -4,15 +4,22 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from tavily import TavilyClient
 
-# Load API keys
+# Load API keys - works both locally (.env) and on Streamlit Cloud (secrets)
 load_dotenv()
+
+def get_key(key_name):
+    """Get API key from Streamlit secrets (cloud) or .env (local)"""
+    try:
+        return st.secrets[key_name]
+    except:
+        return os.getenv(key_name)
 
 # Set up clients
 llm = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=get_key("DEEPSEEK_API_KEY"),
     base_url="https://api.deepseek.com"
 )
-search = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+search = TavilyClient(api_key=get_key("TAVILY_API_KEY"))
 
 def search_company_ai_usage(company_name):
     """Search the web for how a company is using AI"""
